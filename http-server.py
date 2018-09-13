@@ -8,7 +8,7 @@ work on standard Windows systems, but process forks do not;
 
 import time, thread, sys		  # or use threading.Thread().start()
 from socket import *                     # get socket constructor and constants
-myHost = '10.66.42.71'                             # server machine, '' means local host
+myHost = ''                             # server machine, '' means local host
 myPort = 50007                           # listen on a non-reserved port number
 
 if len(sys.argv) > 1:
