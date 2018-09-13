@@ -8,7 +8,7 @@ work on standard Windows systems, but process forks do not;
 
 import time, thread, sys		  # or use threading.Thread().start()
 from socket import *                     # get socket constructor and constants
-myHost = ''                             # server machine, '' means local host
+myHost = gethostbyname(gethostname())                             # server machine, '' means local host
 myPort = 50007                           # listen on a non-reserved port number
 
 if len(sys.argv) > 1:
@@ -22,7 +22,7 @@ sockobj.listen(5)                                # allow up to 5 pending connect
 def now():
     return time.ctime(time.time())               # current time on the server
 						# HTTP responst message
-payload = ''
+header = ''
 
 def handleClient(connection):                    # in spawned thread: reply
     time.sleep(5)                                # simulate a blocking activity
@@ -35,18 +35,18 @@ def handleClient(connection):                    # in spawned thread: reply
 		data = data[1:]			#string slice to take off '/' for correct name of file wanted
 		try:
 		   file = open(data,'r')
-		   payload = 'HTTP/1.1 200 OK\r\n Date: '+now()+'\n Server: '+myHost+'\n Content-Length: 4096\n Connection: Keep-Alive\n Content-Type: text/html; charset=iso-8859-1\n\n'
+		   header = 'HTTP/1.1 200 OK\r\n Date: '+now()+'\n Server: '+myHost+'\n Content-Length: 4096\n Connection: Keep-Alive\n Content-Type: text/html; charset=iso-8859-1\n\n'
 		   bytes=file.read()
-        	   reply = payload+bytes  			#reply with 200, OK message, then send file
+        	   reply = header+bytes  			#reply with 200, OK message, then send file
         	   connection.send(reply.encode())
+		   print data+ ' file sent'		#some acknowledgement that asked file went through
 		except:				#Message for when file is not found in directory, to avoid error on open()
-                   payload = 'HTTP/1.1 404 Not Found\r\n Date: '+now()+'\n Server: '+myHost+'\n Content-Length: 4096\n Connection: Keep-Alive\n Content-Type: text/html; charset=iso-8859-1\n\n'
-                   connection.send(payload)
+                   header = 'HTTP/1.1 404 Not Found\r\n Date: '+now()+'\n Server: '+myHost+'\n Content-Length: 4096\n Connection: Keep-Alive\n Content-Type: text/html; charset=iso-8859-1\n\n'
+                   connection.send(header)
 	file.close()
 	#while(bytes):				#needed to send all bytes, in case not all sent in one func call
 		#connection.send(bytes.encode())
 
-	print data+ ' file sent'		#some acknowledgement that asked file went through
 	connection.close()
 
 def dispatcher():                                # listen until process killed
