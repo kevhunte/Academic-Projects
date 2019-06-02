@@ -5,6 +5,17 @@ from selenium.webdriver.common.keys import Keys
 """
     This project will be used to automate google searches, based on a search provided at the command line.
 """
+def slowScroll(driver,pixels):
+    last_recorded = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        print("slowScroll: scrolling ...")
+        driver.execute_script("window.scrollBy(0, "+str(pixels)+");")
+        time.sleep(0.5)
+        currentHeight = driver.execute_script("return document.body.Height")
+        if(currentHeight == last_recorded):
+            print("break condition hit")
+            break
+        last_recorded = currentHeight
 
 browser = webdriver.Chrome()
 browser.get('https://google.com')
@@ -35,10 +46,12 @@ for webpage in num_iters:
         browser.quit()
         break
     webpages[webpage].click()
-    time.sleep(1)
-    browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(1)                           #blocking function. Wait to load
+    browser.execute_script("window.scrollTo(0, document.body.scrollHeight/2);") #make scroll speed slower
+#slowScroll(browser,400)
     time.sleep(2)
     browser.back()
+    time.sleep(1)                           #wait for page to load
     webpages = browser.find_elements_by_partial_link_text('https://')   #regen elements, fixes problems
 
 
