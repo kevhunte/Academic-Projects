@@ -32,7 +32,7 @@ else:
 search_bar.send_keys(search_param)
 search_bar.send_keys(Keys.RETURN)
 #controls for inside of webpage
-
+time.sleep(0.5)                             #give time to properly load
 webpages = browser.find_elements_by_partial_link_text('https://')     #list of webpages
 index = 0
 num_iters = range(len(webpages))
